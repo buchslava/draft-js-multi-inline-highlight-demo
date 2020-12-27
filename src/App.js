@@ -1,8 +1,12 @@
 import React, { useRef, useState, useEffect } from "react";
-import { Editor, EditorState, ContentState } from "draft-js";
+import { EditorState, ContentState } from "draft-js";
+import Editor from "draft-js-plugins-editor";
 import DraftPasteProcessor from "draft-js/lib/DraftPasteProcessor";
 import SimpleDecorator from "draft-js-simpledecorator";
 import { text } from "./text";
+import useTimeout from "use-timeout";
+
+// https://github.com/draft-js-plugins/draft-js-plugins/issues/955
 
 const styles = {
   editor: {
@@ -101,52 +105,58 @@ const stylesTemp = {
   },
 };
 
-const decorator = new SimpleDecorator(
-  function strategy(contentBlock, callback, contentState) {
-    const text = contentBlock.getText();
-    let match;
+// let rule3 = /correct/g;
 
-    const fragments = new Fragments();
+function strategy(contentBlock, callback, contentState) {
+  const text = contentBlock.getText();
+  let match;
 
-    let rule3 = /correct/g;
-    while ((match = rule3.exec(text)) !== null) {
-      let start = match.index;
-      let end = start + match[0].length;
-      fragments.add("red", [start, end]);
-    }
+  const fragments = new Fragments();
 
-    let rule2 = /more a matter/g;
-    while ((match = rule2.exec(text)) !== null) {
-      let start = match.index;
-      let end = start + match[0].length;
-      fragments.add("yellow", [start, end]);
-    }
-    let rule1 = /more/g;
-    while ((match = rule1.exec(text)) !== null) {
-      let start = match.index;
-      let end = start + match[0].length;
-      fragments.add("red", [start, end]);
-    }
-    if (fragments.isMultiply()) {
-      const ranges = fragments.getDecoratedRanges();
-      for (const range of ranges) {
-        let style = {};
-        for (const s of range.styles) {
-          style = { ...style, ...stylesTemp[s] };
-        }
-        callback(range.range[0], range.range[1], style);
+  // let rule3 = /correct/g;
+  console.log(222, config.rule3, this);
+  while ((match = config.rule3.exec(text)) !== null) {
+    let start = match.index;
+    let end = start + match[0].length;
+    fragments.add("red", [start, end]);
+  }
+
+  let rule2 = /more a matter/g;
+  while ((match = rule2.exec(text)) !== null) {
+    let start = match.index;
+    let end = start + match[0].length;
+    fragments.add("yellow", [start, end]);
+  }
+  let rule1 = /more/g;
+  while ((match = rule1.exec(text)) !== null) {
+    let start = match.index;
+    let end = start + match[0].length;
+    fragments.add("red", [start, end]);
+  }
+  if (fragments.isMultiply()) {
+    const ranges = fragments.getDecoratedRanges();
+    for (const range of ranges) {
+      let style = {};
+      for (const s of range.styles) {
+        style = { ...style, ...stylesTemp[s] };
       }
-    } else {
-      const singleRanges = fragments.getSimpleRanges();
-      if (singleRanges) {
-        for (const range of singleRanges.range) {
-          callback(range[0], range[1], stylesTemp[singleRanges.style]);
-        }
+      callback(range.range[0], range.range[1], style);
+    }
+  } else {
+    const singleRanges = fragments.getSimpleRanges();
+    if (singleRanges) {
+      for (const range of singleRanges.range) {
+        callback(range[0], range[1], stylesTemp[singleRanges.style]);
       }
     }
-  },
+  }
+}
+
+const multiHighlightPlugin = (config) => {
+  console.log(111, config);
 
   function component(props) {
+    console.log(333, config);
     return (
       <span
         style={{ color: props.color, backgroundColor: props.backgroundColor }}
@@ -155,23 +165,60 @@ const decorator = new SimpleDecorator(
       </span>
     );
   }
-);
+
+  return {
+    decorators: [new SimpleDecorator(strategy, component)],
+  };
+};
 
 function App() {
   const processedHTML = DraftPasteProcessor.processHTML(text);
   const contentState = ContentState.createFromBlockArray(processedHTML);
   const editor = useRef(null);
   const [editorState, setEditorState] = useState(
-    EditorState.createWithContent(contentState, decorator)
+    EditorState.createWithContent(contentState)
   );
+  const [cfg, setCfg] = useState({ rule3: /correct/g });
+  const [pl, setPl] = useState([multiHighlightPlugin(cfg)]);
+
+  // const cfg = {
+  //   rule3: /correct/g,
+  // };
 
   function focusEditor() {
     editor.current.focus();
   }
 
+  useTimeout(() => {
+    setCfg({ rule3: /and/g });
+  }, 5000);
+
+  const forceRender = () => {
+    const contentState = editorState.getCurrentContent();
+  
+    const newEditorStateInstance = EditorState.createWithContent(contentState, strategy);
+  
+    const copyOfEditorState = Draft.EditorState.set(
+      newEditorStateInstance,
+      {   
+        selection: editorState.getSelection(), 
+        undoStack: editorState.getUndoStack(), 
+        redoStack: editorState.getRedoStack(), 
+        lastChangeType: editorState.getLastChangeType() 
+      }
+    );
+    setEditorState(copyOfEditorState);
+  }
+
   useEffect(() => {
-    focusEditor();
-  }, []);
+    setPl([multiHighlightPlugin(cfg)]);
+    
+    forceRender();
+    // setPl([]);
+  }, [cfg, editor]);
+  // useTimeout(() => {
+  //   editor.current.onChange(editorState);
+  // }, 5000);
 
   return (
     <div onClick={focusEditor} style={styles.editor}>
@@ -181,6 +228,7 @@ function App() {
         onChange={(newState) => {
           setEditorState(newState);
         }}
+        plugins={pl}
       />
     </div>
   );
