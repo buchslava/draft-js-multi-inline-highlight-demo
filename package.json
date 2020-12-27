@@ -1,9 +1,10 @@
 {
-  "name": "draft-editor",
+  "name": "draft-js-multi-inline-highlight-demo",
   "version": "0.1.0",
   "private": true,
   "dependencies": {
     "draft-js": "0.11.7",
+    "draft-js-multi-inline-highlight": "0.1.5",
     "draft-js-simpledecorator": "1.0.2",
     "react": "17.0.1",
     "react-dom": "17.0.1",
