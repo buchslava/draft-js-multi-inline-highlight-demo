@@ -1,12 +1,13 @@
 import React, { useRef, useState, useEffect } from "react";
-import { Editor, EditorState, ContentState } from "draft-js";
+import { Editor, EditorState, ContentState, ContentBlock } from "draft-js";
+// @ts-ignore
 import DraftPasteProcessor from "draft-js/lib/DraftPasteProcessor";
 import { text } from "./text";
 import {
   MultiHighlightDecorator,
-  WordMathcher,
+  WordMatcher,
   SentenceMatcher,
-  useMultiHighlightConfigChange,
+  MultiHighlightConfig,
 } from "draft-js-multi-inline-highlight";
 
 const styles = {
@@ -20,7 +21,7 @@ const styles = {
 function App() {
   const processedHTML = DraftPasteProcessor.processHTML(text);
   const contentState = ContentState.createFromBlockArray(processedHTML);
-  const editor = useRef(null);
+  const editor = useRef<any>(null);
   const hightlightStyles = {
     yellow: {
       backgroundColor: "yellow",
@@ -32,39 +33,37 @@ function App() {
       color: "blue",
     },
   };
-  const initHighlightConfig = {
+  const initHighlightConfig: MultiHighlightConfig = {
     rules: [
       {
-        words: ["His back begins to ache, but he knows he can bear it."],
+        content: ["His back begins to ache, but he knows he can bear it."],
         style: "yellow",
         matcher: SentenceMatcher,
       },
       {
-        words: ["and"],
+        content: ["and"],
         style: "red",
-        matcher: WordMathcher,
+        matcher: WordMatcher,
       },
       {
-        words: ["pulled", "knows"],
+        content: ["pulled", "knows"],
         style: "blue",
-        matcher: WordMathcher,
+        matcher: WordMatcher,
       },
     ],
     styles: hightlightStyles,
   };
 
-  const blockStyleFn = (block) =>
+  const blockStyleFn = (block: ContentBlock) =>
     block.getKey() === secondParagraph ? "grey-paragraph" : "normal-paragraph";
-  const [highlightConfig, setHighlightConfig] = useState(initHighlightConfig);
-  const [secondParagraph, setSecondParagraph] = useState();
+  const [highlightConfig, setHighlightConfig] = useState<MultiHighlightConfig>(initHighlightConfig);
+  const [secondParagraph, setSecondParagraph] = useState<string>();
   const [editorState, setEditorState] = useState(
     EditorState.createWithContent(
       contentState,
       MultiHighlightDecorator(highlightConfig)
     )
   );
-
-  useMultiHighlightConfigChange(highlightConfig, editorState, setEditorState);
 
   function focusEditor() {
     editor.current.focus();
@@ -74,12 +73,22 @@ function App() {
     editorState
       .getCurrentContent()
       .getBlocksAsArray()
-      .forEach((bl, index) => {
+      .forEach((bl: ContentBlock, index: number) => {
         if (index === 2) {
           setSecondParagraph(bl.getKey());
         }
       });
   }, [editorState]);
+
+  useEffect(() => {
+    if (highlightConfig) {
+      setEditorState(
+        EditorState.set(editorState, {
+          decorator: MultiHighlightDecorator(highlightConfig),
+        })
+      );
+    }
+  }, [highlightConfig]);
 
   useEffect(() => {
     focusEditor();
@@ -93,7 +102,7 @@ function App() {
           onClick={(e) => {
             e.preventDefault();
             const newConfig = { ...highlightConfig };
-            newConfig.rules[1].words = ["the"];
+            newConfig.rules[1].content = ["the"];
             setHighlightConfig(newConfig);
           }}
         >
@@ -112,7 +121,7 @@ function App() {
           onClick={(e) => {
             e.preventDefault();
             const newConfig = { ...highlightConfig };
-            newConfig.rules[0].words = [
+            newConfig.rules[0].content = [
               "At noon that day, a fish takes the bait on one of his lines.",
               "The old man is very cautious, using all his knowledge, gained through decades of experience on the water, to know what to do with the line and when.",
               "His back begins to ache, but he knows he can bear it.",

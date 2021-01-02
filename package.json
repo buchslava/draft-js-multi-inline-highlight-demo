@@ -1,24 +1,34 @@
 {
   "name": "draft-js-multi-inline-highlight-demo",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "private": true,
   "dependencies": {
+    "@testing-library/jest-dom": "^5.11.4",
+    "@testing-library/react": "^11.1.0",
+    "@testing-library/user-event": "^12.1.10",
+    "@types/jest": "^26.0.15",
+    "@types/node": "^12.0.0",
+    "@types/react": "^16.9.53",
+    "@types/react-dom": "^16.9.8",
     "draft-js": "0.11.7",
-    "draft-js-multi-inline-highlight": "0.1.5",
+    "draft-js-multi-inline-highlight": "^0.2.0",
     "draft-js-simpledecorator": "1.0.2",
-    "react": "17.0.1",
-    "react-dom": "17.0.1",
+    "react": "^17.0.1",
+    "react-dom": "^17.0.1",
     "react-scripts": "4.0.1",
-    "web-vitals": "0.2.4"
+    "typescript": "^4.0.3",
+    "web-vitals": "^0.2.4"
   },
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
+    "test": "react-scripts test",
     "eject": "react-scripts eject"
   },
   "eslintConfig": {
     "extends": [
-      "react-app"
+      "react-app",
+      "react-app/jest"
     ]
   },
   "browserslist": {
@@ -32,5 +42,8 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
+  },
+  "devDependencies": {
+    "@types/draft-js": "^0.10.44"
   }
 }
