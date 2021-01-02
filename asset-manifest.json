@@ -1,0 +1,22 @@
+{
+  "files": {
+    "main.css": "/draft-js-multi-inline-highlight-demo/static/css/main.891323e7.chunk.css",
+    "main.js": "/draft-js-multi-inline-highlight-demo/static/js/main.de7205d6.chunk.js",
+    "main.js.map": "/draft-js-multi-inline-highlight-demo/static/js/main.de7205d6.chunk.js.map",
+    "runtime-main.js": "/draft-js-multi-inline-highlight-demo/static/js/runtime-main.23bf32c3.js",
+    "runtime-main.js.map": "/draft-js-multi-inline-highlight-demo/static/js/runtime-main.23bf32c3.js.map",
+    "static/js/2.abe878d8.chunk.js": "/draft-js-multi-inline-highlight-demo/static/js/2.abe878d8.chunk.js",
+    "static/js/2.abe878d8.chunk.js.map": "/draft-js-multi-inline-highlight-demo/static/js/2.abe878d8.chunk.js.map",
+    "static/js/3.43e98fb8.chunk.js": "/draft-js-multi-inline-highlight-demo/static/js/3.43e98fb8.chunk.js",
+    "static/js/3.43e98fb8.chunk.js.map": "/draft-js-multi-inline-highlight-demo/static/js/3.43e98fb8.chunk.js.map",
+    "index.html": "/draft-js-multi-inline-highlight-demo/index.html",
+    "static/css/main.891323e7.chunk.css.map": "/draft-js-multi-inline-highlight-demo/static/css/main.891323e7.chunk.css.map",
+    "static/js/2.abe878d8.chunk.js.LICENSE.txt": "/draft-js-multi-inline-highlight-demo/static/js/2.abe878d8.chunk.js.LICENSE.txt"
+  },
+  "entrypoints": [
+    "static/js/runtime-main.23bf32c3.js",
+    "static/js/2.abe878d8.chunk.js",
+    "static/css/main.891323e7.chunk.css",
+    "static/js/main.de7205d6.chunk.js"
+  ]
+}
